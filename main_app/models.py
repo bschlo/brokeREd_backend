@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 DEALTYPES = (
     ('Acquisition', 'Acquisition'),
@@ -35,11 +36,13 @@ RATETYPES = (
 
 class Developer(models.Model):
     name = models.CharField(max_length=50)
-    def _str__(self):
+    def __str__(self):
         return self.name
 
 
 class Deal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=200, default='Your default address')
     stories = models.PositiveIntegerField(default=1)
@@ -61,7 +64,7 @@ class Deal(models.Model):
         blank=True,
         null=True,
     )
-    developer = models.ManyToManyField(Developer)
+    developers = models.ManyToManyField(Developer)
     loan_amount = models.PositiveIntegerField()
     deal_type = models.CharField(
         max_length=100,
