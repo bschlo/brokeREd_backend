@@ -1,0 +1,3 @@
+CREATE DATABASE brokeREd;
+CREATE USER brokeREd_admin WITH PASSWORD 'password';
+GRANT ALL PRIVILEGES ON DATABASE brokeREd TO brokeREd_admin;
