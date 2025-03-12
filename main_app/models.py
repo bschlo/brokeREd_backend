@@ -76,10 +76,10 @@ class Deal(models.Model):
         choices=ASSETCLASSES,
         default=ASSETCLASSES[0][0]
     )
-    image_url = models.URLField(default='default url')
+    image_url = models.CharField(default='default url')
     description = models.TextField(default='default description')
-    date = models.DateField()
-    time = models.TimeField()
+    date = models.DateTimeField(auto_now_add=True)
+    
     
     def __str__(self):
         return self.name

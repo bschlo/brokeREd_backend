@@ -97,12 +97,12 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
        deal = self.get_object()
        if deal.user != self.request.user:
-        raise PermissionDenied({"message": "You do not have permission to edit this cat."})
+        raise PermissionDenied({"message": "You do not have permission to edit this deal."})
        serializer.save()
     
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
-           raise PermissionDenied({"message": "You do not have permission to delete this cat."})
+           raise PermissionDenied({"message": "You do not have permission to delete this deal."})
         instance.delete()
 
 class DeveloperList(generics.ListCreateAPIView):

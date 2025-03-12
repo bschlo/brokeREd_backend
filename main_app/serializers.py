@@ -7,12 +7,11 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'password')
+        fields = ('id', 'username', 'password')
     
     def create(self, validated_data):
       user = User.objects.create_user(
           username=validated_data['username'],
-          email=validated_data['email'],
           password=validated_data['password'] 
       )
       
@@ -24,9 +23,16 @@ class DeveloperSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DealSerializer(serializers.ModelSerializer):
-    developers = DeveloperSerializer(many=True, read_only=True) 
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    developers = DeveloperSerializer(many=True, read_only=True)
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Deal
         fields = '__all__'
+
+    def get_user(self, obj):
+        return {
+            'id': obj.user.id,
+            'username': obj.user.username
+        }
 
