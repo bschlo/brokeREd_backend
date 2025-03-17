@@ -20,16 +20,10 @@ class UserSerializer(serializers.ModelSerializer):
 class DeveloperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Developer
-        fields = '__all__'
-    
-    def get_developer(self, obj):
-        return {
-            'id': obj.developer.id,
-            'name': obj.developer.name
-        }
+        fields = ['id', 'name']  
 
 class DealSerializer(serializers.ModelSerializer):
-    developers = DeveloperSerializer(many=True)
+    developers = serializers.PrimaryKeyRelatedField(queryset=Developer.objects.all(), many=True)  
     user = serializers.SerializerMethodField()
 
     class Meta:
@@ -41,32 +35,33 @@ class DealSerializer(serializers.ModelSerializer):
             'id': obj.user.id,
             'username': obj.user.username
         }
-    
-    def create(self, validated_data):
-        # Extract developers data from validated_data
-        developers_data = validated_data.pop('developers', [])
+
+    def to_representation(self, instance):
         
-        # Create the deal instance
-        deal = Deal.objects.create(**validated_data)
+        representation = super().to_representation(instance)
         
-        # Add the developers to the deal
-        for developer_data in developers_data:
-            # If you're using a many-to-many relationship
-            # Assuming you have a Developer model with id and name fields
-            developer_id = developer_data.get('id')
-            if developer_id:
-                # If you're using existing developers
-                try:
-                    developer = Developer.objects.get(id=developer_id)
-                    deal.developers.add(developer)
-                except Developer.DoesNotExist:
-                    pass
-            else:
-                # If you're creating new developers
-                name = developer_data.get('name')
-                if name:
-                    developer = Developer.objects.create(name=name)
-                    deal.developers.add(developer)
         
-        return deal
+        developers = instance.developers.all()
+        developers_serializer = DeveloperSerializer(developers, many=True)
+        representation['developers'] = developers_serializer.data  
+        
+        return representation
+
+    def update(self, instance, validated_data):
+        
+        developers_data = validated_data.pop('developers', None)
+
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        
+        if developers_data:
+            
+            instance.developers.set(developers_data)
+
+        instance.save()  
+        return instance
+
+
 

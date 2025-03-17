@@ -118,13 +118,14 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "id"
     
     def get_queryset(self):
-       user = self.request.user
-       return Deal.objects.filter(user=user)
+        user = self.request.user
+        return Deal.objects.filter(user=user)
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
 
+        # Get developers not associated with this deal
         developers_not_associated = Developer.objects.exclude(
             id__in=instance.developers.all()
         )
@@ -138,16 +139,36 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
                 "developers_not_associated": developers_serializer.data,
             }
         )
-    def perform_update(self, serializer):
-       deal = self.get_object()
-       if deal.user != self.request.user:
-        raise PermissionDenied({"message": "You do not have permission to edit this deal."})
-       serializer.save()
     
+    def perform_update(self, serializer):
+        deal = self.get_object()
+
+        # Check if the user is allowed to edit this deal
+        if deal.user != self.request.user:
+            raise PermissionDenied({"message": "You do not have permission to edit this deal."})
+
+        # Handle developers separately since it's a many-to-many relationship
+        developers_data = self.request.data.get('developers', [])
+
+        if developers_data:
+            # Validate the developers data (ensure the IDs are valid)
+            developers = Developer.objects.filter(id__in=developers_data)
+            # If the number of developers fetched does not match the provided IDs, raise an error
+            if len(developers) != len(developers_data):
+                raise PermissionDenied({"message": "One or more developer IDs are invalid."})
+
+            # Update the many-to-many relationship by clearing existing ones and adding new ones
+            deal.developers.set(developers)
+
+        # Save the deal object after updating its developers
+        serializer.save()
+
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
-           raise PermissionDenied({"message": "You do not have permission to delete this deal."})
+            raise PermissionDenied({"message": "You do not have permission to delete this deal."})
         instance.delete()
+
+
 
 class DeveloperList(APIView):
     def get(self, request, format=None):
