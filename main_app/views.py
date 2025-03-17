@@ -62,11 +62,55 @@ class DealList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-       user = self.request.user
-       return Deal.objects.filter(user=user)
-    
+        user = self.request.user
+        queryset = Deal.objects.filter(user=user)
+        
+        stories = self.request.GET.get('stories')
+        square_feet_min = self.request.GET.get('squareFeetMin')
+        square_feet_max = self.request.GET.get('squareFeetMax')
+        rate_type = self.request.GET.get('rateType')
+        minimum_rate = self.request.GET.get('minimumRate')
+        maximum_rate = self.request.GET.get('maximumRate')
+        loan_amount_min = self.request.GET.get('loanAmountMin')
+        loan_amount_max = self.request.GET.get('loanAmountMax')
+        deal_type = self.request.GET.get('dealType')
+        asset_class = self.request.GET.get('assetClass')
+        developers = self.request.GET.get('developers')
+
+        if stories:
+            queryset = queryset.filter(stories=stories)
+        
+        if square_feet_min:
+            queryset = queryset.filter(square_feet__gte=square_feet_min)
+        if square_feet_max:
+            queryset = queryset.filter(square_feet__lte=square_feet_max)
+        
+        if rate_type:
+            queryset = queryset.filter(rate_type=rate_type)
+        
+        if minimum_rate:
+            queryset = queryset.filter(minimum_rate__gte=minimum_rate)
+        if maximum_rate:
+            queryset = queryset.filter(maximum_rate__lte=maximum_rate)
+        
+        if loan_amount_min:
+            queryset = queryset.filter(loan_amount__gte=loan_amount_min)
+        if loan_amount_max:
+            queryset = queryset.filter(loan_amount__lte=loan_amount_max)
+        
+        if deal_type:
+            queryset = queryset.filter(deal_type=deal_type)
+        
+        if asset_class:
+            queryset = queryset.filter(asset_class=asset_class)
+        
+        if developers: 
+           queryset = queryset.filter(developers=developers)
+
+        return queryset
+
     def perform_create(self, serializer):
-       serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user)
 
 
 class DealDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -105,9 +149,11 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
            raise PermissionDenied({"message": "You do not have permission to delete this deal."})
         instance.delete()
 
-class DeveloperList(generics.ListCreateAPIView):
-    queryset = Developer.objects.all()
-    serializer_class = DeveloperSerializer
+class DeveloperList(APIView):
+    def get(self, request, format=None):
+        developers = Developer.objects.all()
+        serializer = DeveloperSerializer(developers, many=True)
+        return Response({'developers': serializer.data})
 
 
 class DeveloperDetail(generics.RetrieveUpdateDestroyAPIView):
