@@ -79,6 +79,8 @@ class Deal(models.Model):
     image_url = models.CharField(default='default url')
     description = models.TextField(default='default description')
     date = models.DateTimeField(auto_now_add=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     
     
     def __str__(self):

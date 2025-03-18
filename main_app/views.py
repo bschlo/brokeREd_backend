@@ -141,32 +141,31 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
         )
     
     def perform_update(self, serializer):
-        deal = self.get_object()
+      deal = self.get_object()
 
-        # Check if the user is allowed to edit this deal
-        if deal.user != self.request.user:
-            raise PermissionDenied({"message": "You do not have permission to edit this deal."})
+      # Check if the user is allowed to edit this deal
+      if deal.user != self.request.user:
+          raise PermissionDenied({"message": "You do not have permission to edit this deal."})
 
-        # Handle developers separately since it's a many-to-many relationship
-        developers_data = self.request.data.get('developers', [])
+      # Handle developers separately since it's a many-to-many relationship
+      developers_data = self.request.data.get('developers', [])
+      if developers_data:
+          developers = Developer.objects.filter(id__in=developers_data)
+          if len(developers) != len(developers_data):
+              raise PermissionDenied({"message": "One or more developer IDs are invalid."})
+          deal.developers.set(developers)
 
-        if developers_data:
-            # Validate the developers data (ensure the IDs are valid)
-            developers = Developer.objects.filter(id__in=developers_data)
-            # If the number of developers fetched does not match the provided IDs, raise an error
-            if len(developers) != len(developers_data):
-                raise PermissionDenied({"message": "One or more developer IDs are invalid."})
+      # Handle latitude and longitude
+      latitude = self.request.data.get('latitude')
+      longitude = self.request.data.get('longitude')
 
-            # Update the many-to-many relationship by clearing existing ones and adding new ones
-            deal.developers.set(developers)
+      if latitude and longitude:
+          deal.latitude = latitude
+          deal.longitude = longitude
 
-        # Save the deal object after updating its developers
-        serializer.save()
+      # Save the deal object after updating its data
+      serializer.save()
 
-    def perform_destroy(self, instance):
-        if instance.user != self.request.user:
-            raise PermissionDenied({"message": "You do not have permission to delete this deal."})
-        instance.delete()
 
 
 
