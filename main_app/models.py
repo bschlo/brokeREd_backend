@@ -81,6 +81,7 @@ class Deal(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+    units = models.PositiveIntegerField()
     
     
     def __str__(self):
