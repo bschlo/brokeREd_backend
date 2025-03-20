@@ -171,7 +171,7 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class DeveloperList(APIView):
     def get(self, request, format=None):
-        developers = Developer.objects.all()
+        developers = Developer.objects.all().order_by('name')
         serializer = DeveloperSerializer(developers, many=True)
         return Response({'developers': serializer.data})
 

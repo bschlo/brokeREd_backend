@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 class DeveloperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Developer
-        fields = ['id', 'name']  
+        fields = ['id', 'name', 'image_url']  
 
 class DealSerializer(serializers.ModelSerializer):
     developers = serializers.PrimaryKeyRelatedField(queryset=Developer.objects.all(), many=True)  

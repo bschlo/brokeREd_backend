@@ -36,6 +36,7 @@ RATETYPES = (
 
 class Developer(models.Model):
     name = models.CharField(max_length=50)
+    image_url = models.CharField(default='default url')
     def __str__(self):
         return self.name
 
