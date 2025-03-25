@@ -76,6 +76,7 @@ class DealList(generics.ListCreateAPIView):
         deal_type = self.request.GET.get('dealType')
         asset_class = self.request.GET.get('assetClass')
         developers = self.request.GET.get('developers')
+        units = self.request.GET.get('units')
 
         if stories:
             queryset = queryset.filter(stories=stories)
@@ -107,6 +108,8 @@ class DealList(generics.ListCreateAPIView):
         if developers: 
            queryset = queryset.filter(developers=developers)
 
+        if units: 
+            queryset = queryset.filter(units=units)
         return queryset
 
     def perform_create(self, serializer):
