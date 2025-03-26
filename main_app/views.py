@@ -64,8 +64,12 @@ class DealList(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
         queryset = Deal.objects.filter(user=user)
+
+        queryset = queryset.order_by('-date')
         
-        stories = self.request.GET.get('stories')
+        stories_min = self.request.GET.get('storiesMin')
+        print(stories_min)
+        stories_max = self.request.GET.get('storiesMax')
         square_feet_min = self.request.GET.get('squareFeetMin')
         square_feet_max = self.request.GET.get('squareFeetMax')
         rate_type = self.request.GET.get('rateType')
@@ -76,13 +80,18 @@ class DealList(generics.ListCreateAPIView):
         deal_type = self.request.GET.get('dealType')
         asset_class = self.request.GET.get('assetClass')
         developers = self.request.GET.get('developers')
-        units = self.request.GET.get('units')
+        units_min = self.request.GET.get('unitsMin')
+        units_max = self.request.GET.get('unitsMax')
 
-        if stories:
-            queryset = queryset.filter(stories=stories)
+        if stories_min:
+            queryset = queryset.filter(stories__gte=stories_min)
+        
+        if stories_max:
+            queryset = queryset.filter(stories__lte=stories_max)
         
         if square_feet_min:
             queryset = queryset.filter(square_feet__gte=square_feet_min)
+
         if square_feet_max:
             queryset = queryset.filter(square_feet__lte=square_feet_max)
         
@@ -108,8 +117,19 @@ class DealList(generics.ListCreateAPIView):
         if developers: 
            queryset = queryset.filter(developers=developers)
 
-        if units: 
-            queryset = queryset.filter(units=units)
+        if units_min: 
+            queryset = queryset.filter(units__gte=units_min)
+        
+        if units_max: 
+            queryset = queryset.filter(units__lte=units_max)
+
+        sort_by_loan_amount = self.request.GET.get('sortByLoanAmount', 'asc')
+
+        if sort_by_loan_amount == 'asc':
+            queryset = queryset.order_by('loan_amount')
+        elif sort_by_loan_amount == 'desc':
+            queryset = queryset.order_by('-loan_amount')
+
         return queryset
 
     def perform_create(self, serializer):
