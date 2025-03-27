@@ -134,6 +134,28 @@ class DealList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+    
+    
+class TopBottomDealsView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        
+        top_5_loans = Deal.objects.filter(user=user).order_by("-loan_amount")[:5]
+        bottom_5_loans = Deal.objects.filter(user=user).order_by("loan_amount")[:5]
+
+        
+        top_5_rates = Deal.objects.filter(user=user).order_by("-minimum_rate")[:5]
+        bottom_5_rates = Deal.objects.filter(user=user).order_by("minimum_rate")[:5]
+
+        return Response({
+            "top_5_loans": DealSerializer(top_5_loans, many=True).data,
+            "bottom_5_loans": DealSerializer(bottom_5_loans, many=True).data,
+            "top_5_rates": DealSerializer(top_5_rates, many=True).data,
+            "bottom_5_rates": DealSerializer(bottom_5_rates, many=True).data,
+        })
 
 
 class DealDetail(generics.RetrieveUpdateDestroyAPIView):

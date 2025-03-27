@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import Home, DealList, DealDetail, DeveloperList, DeveloperDetail, AddDeveloperToDeal, RemoveDeveloperFromDeal, CreateUserView, LoginView, VerifyUserView
+from .views import Home, DealList, DealDetail, DeveloperList, DeveloperDetail, AddDeveloperToDeal, RemoveDeveloperFromDeal, CreateUserView, LoginView, VerifyUserView, TopBottomDealsView
 
 urlpatterns = [
   path('', Home.as_view(), name='home'),
   path('deals/', DealList.as_view(), name='deal-list' ),
+  path("deals/top-bottom/", TopBottomDealsView.as_view(), name="top-bottom-deals"),
   path('deals/<int:id>/', DealDetail.as_view(), name='deal-detail' ),
   path('developers/', DeveloperList.as_view(), name='developer-list'),
   path('developers/<int:id>/', DeveloperDetail.as_view(), name='developer-detail'),
