@@ -200,7 +200,6 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
               raise PermissionDenied({"message": "One or more developer IDs are invalid."})
           deal.developers.set(developers)
 
-      # Handle latitude and longitude
       latitude = self.request.data.get('latitude')
       longitude = self.request.data.get('longitude')
 
@@ -208,7 +207,6 @@ class DealDetail(generics.RetrieveUpdateDestroyAPIView):
           deal.latitude = latitude
           deal.longitude = longitude
 
-      # Save the deal object after updating its data
       serializer.save()
 
 
