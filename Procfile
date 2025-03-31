@@ -1,2 +1,2 @@
 release: python3 manage.py migrate
-web: gunicorn brokered.wsgi --log-file -
+web: gunicorn brokeREd.wsgi --log-file -
