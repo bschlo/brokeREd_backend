@@ -39,6 +39,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://brokered.netlify.app",
 ]
 
 
