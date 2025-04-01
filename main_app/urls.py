@@ -6,6 +6,7 @@ urlpatterns = [
   path('deals/', DealList.as_view(), name='deal-list' ),
   path("deals/top-bottom/", TopBottomDealsView.as_view(), name="top-bottom-deals"),
   path('deals/<int:id>/', DealDetail.as_view(), name='deal-detail' ),
+  path('save-deal/<int:deal_id>/', SaveDealToProfile.as_view(), name='save_deal_to_profile'),
   path('developers/', DeveloperList.as_view(), name='developer-list'),
   path('developers/<int:id>/', DeveloperDetail.as_view(), name='developer-detail'),
   path('deals/<int:id>/add_developer/<int:developer_id>/', AddDeveloperToDeal.as_view(), name='add-developer-to-deal'),

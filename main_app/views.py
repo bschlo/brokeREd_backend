@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics, status, permissions
-from .models import Deal, Developer
+from .models import Deal, Developer, SavedDeal
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -239,3 +239,28 @@ class RemoveDeveloperFromDeal(APIView):
         developer = Developer.objects.get(id=developer_id)
         deal.developers.remove(developer)
         return Response({"message": f"{developer.name} removed from Deal {deal.name}"})
+
+class SaveDealToProfile(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, deal_id):
+
+        user = request.user
+
+        try:
+
+            deal = Deal.objects.get(id=deal_id)
+
+            existing_saved_deal = SavedDeal.objects.filter(user=user, deal=deal).first()
+
+            if existing_saved_deal:
+                
+                existing_saved_deal.delete()
+                return Response({"message": "Deal unsaved from profile"}, status=status.HTTP_200_OK)
+            else:
+                
+                SavedDeal.objects.create(user=user, deal=deal)
+                return Response({"message": "Deal saved to profile"}, status=status.HTTP_201_CREATED)
+        
+        except Deal.DoesNotExist:
+            return Response({"error": "Deal not found"}, status=status.HTTP_404_NOT_FOUND)

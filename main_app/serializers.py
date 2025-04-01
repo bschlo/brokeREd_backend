@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Deal, Developer
+from .models import Deal, Developer, SavedDeal
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -63,5 +63,10 @@ class DealSerializer(serializers.ModelSerializer):
         instance.save()  
         return instance
 
+
+class SaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedDeal
+        fields = ['user', 'deal', 'created_at']
 
 
