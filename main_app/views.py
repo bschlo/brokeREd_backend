@@ -241,7 +241,7 @@ class RemoveDeveloperFromDeal(APIView):
         return Response({"message": f"{developer.name} removed from Deal {deal.name}"})
 
 class SaveDealToProfile(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, deal_id):
 
