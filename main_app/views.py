@@ -142,12 +142,12 @@ class TopBottomDealsView(APIView):
         user = request.user
 
         
-        top_5_loans = Deal.objects.filter(user=user).order_by("-loan_amount")[:5]
-        bottom_5_loans = Deal.objects.filter(user=user).order_by("loan_amount")[:5]
+        top_5_loans = Deal.objects.order_by("-loan_amount")[:5]
+        bottom_5_loans = Deal.objects.order_by("loan_amount")[:5]
 
         
-        top_5_rates = Deal.objects.filter(user=user).order_by("-minimum_rate")[:5]
-        bottom_5_rates = Deal.objects.filter(user=user).order_by("minimum_rate")[:5]
+        top_5_rates = Deal.objects.order_by("-minimum_rate")[:5]
+        bottom_5_rates = Deal.objects.order_by("minimum_rate")[:5]
 
         return Response({
             "top_5_loans": DealSerializer(top_5_loans, many=True).data,
