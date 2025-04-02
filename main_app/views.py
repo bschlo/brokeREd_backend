@@ -62,8 +62,7 @@ class DealList(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        queryset = Deal.objects.filter(user=user)
+        queryset = Deal.objects.all()
 
         queryset = queryset.order_by('-date')
         
